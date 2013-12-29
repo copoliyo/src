@@ -112,6 +112,8 @@ public class DatosInicio {
 						existeReg = true;
 
 						lNombreEmpresa.setText(rs.getString("SISTEM_NOMBRE"));
+						DatosComunes dc = new DatosComunes(empresa);
+						System.out.println(DatosComunes.nombreEmpresa);
 					}
 					if(existeReg == false){
 						System.out.println("No existe la empresa, CREARLA!!!");
