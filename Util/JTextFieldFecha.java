@@ -11,10 +11,15 @@ import javax.swing.JTextField;
 
 public class JTextFieldFecha extends JTextField implements KeyListener, ActionListener, FocusListener{
 
+	public JTextFieldFecha(){
+		this.addKeyListener(this);
+		this.addActionListener(this);
+		this.addFocusListener(this);
+	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		System.out.println("Fecha válida");
+
 		
 	}
 
@@ -23,12 +28,13 @@ public class JTextFieldFecha extends JTextField implements KeyListener, ActionLi
 		// TODO Auto-generated method stub
 		if (arg0.getKeyCode() == KeyEvent.VK_ENTER){
 			if (Fecha.fechaValida(this.getText())){
-				System.out.println("Fecha válida");
+				System.out.println("Fecha válida KeyPressed");
 				// Un pequeño lío
 				this.setText(Cadena.fechaAcadena(Cadena.cadenaAfecha(this.getText())));
 				this.select(0, 0);
+				this.transferFocus();
 			}else{
-				System.out.println("Fecha INCORRECTA");
+				System.out.println("Fecha INCORRECTA KeyPressed");
 				this.requestFocus(true);
 			}
 				
@@ -58,12 +64,12 @@ public class JTextFieldFecha extends JTextField implements KeyListener, ActionLi
 		// TODO Auto-generated method stub
 
 		if (Fecha.fechaValida(this.getText())){
-			System.out.println("Fecha válida");
+			System.out.println("Fecha válida FocusLost");
 			// Un pequeño lío
 			this.setText(Cadena.fechaAcadena(Cadena.cadenaAfecha(this.getText())));
 			this.select(0, 0);
 		}else{
-			System.out.println("Fecha INCORRECTA");
+			System.out.println("Fecha INCORRECTA FocusLost");
 			this.requestFocus(true);
 		}
 
