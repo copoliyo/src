@@ -12,6 +12,7 @@ import javax.swing.*;
 
 import Util.Cadena;
 import Util.Fecha;
+import Util.JTextFieldFecha;
 
 public class DatosInicio {
 	JDialog pantallaDi;
@@ -20,8 +21,6 @@ public class DatosInicio {
 	JPasswordField pfUsuario;
 	JButton bCorrecto, bFinPrograma, bCalendario;
 	MysqlConnect m = null;
-	
-
 	
 	DatosInicio(){
 		m = MysqlConnect.getDbCon();
@@ -54,10 +53,12 @@ public class DatosInicio {
 		bCalendario.setIcon(new ImageIcon(getClass().getResource("/Imagenes/icono_calendario.png")));
 		bCalendario.addActionListener(new BotonCalendarioListener());
 		
-		tfFecha = new JTextField();
+		// Cambiar
+		//tfFecha = new JTextField();
+		tfFecha = new JTextFieldFecha();
 		tfFecha.setBounds(100, 35, 90, 20);
 		tfFecha.setText(Cadena.fechaAcadena(fec.fechaDia()));
-		tfFecha.addKeyListener(new FechaListener());	
+		//tfFecha.addKeyListener(new FechaListener());	
 		
 		lUsuario = new JLabel("Usuario");
 		lUsuario.setBounds(10, 60, 80, 20);
@@ -288,12 +289,14 @@ public class DatosInicio {
 			// TODO Auto-generated method stub			
 			if (arg0.getKeyCode() == KeyEvent.VK_ENTER){
 				if (Fecha.fechaValida(tfFecha.getText())){
+					System.out.println("Fecha válida");
 					// Un pequeño lío
 					tfFecha.setText(Cadena.fechaAcadena(Cadena.cadenaAfecha(tfFecha.getText())));
 					tfFecha.select(0, 0);
 					pfUsuario.requestFocus(true);
 					pfUsuario.selectAll();
 				}else{
+					System.out.println("Fecha INCORRECTA");
 					tfFecha.requestFocus(true);
 				}
 					
