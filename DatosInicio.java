@@ -16,7 +16,8 @@ import Util.Fecha;
 public class DatosInicio {
 	JDialog pantallaDi;
 	JLabel lEmpresa, lFecha, lUsuario, lNombreEmpresa;
-	JTextField tfEmpresa, tfFecha, tfUsuario;
+	JTextField tfEmpresa, tfFecha;
+	JPasswordField pfUsuario;
 	JButton bCorrecto, bFinPrograma, bCalendario;
 	MysqlConnect m = null;
 	
@@ -38,8 +39,9 @@ public class DatosInicio {
 		
 		tfEmpresa = new JTextField();
 		tfEmpresa.setBounds(100, 10, 30, 20);
-		tfEmpresa.addKeyListener(new EmpresaListener());
+		tfEmpresa.addKeyListener(new EmpresaListener());	
 		tfEmpresa.addFocusListener(new EmpresaListener());
+		
 		
 		lNombreEmpresa = new JLabel("");
 		lNombreEmpresa.setBounds(150, 10, 200, 20);
@@ -55,12 +57,14 @@ public class DatosInicio {
 		tfFecha = new JTextField();
 		tfFecha.setBounds(100, 35, 90, 20);
 		tfFecha.setText(Cadena.fechaAcadena(fec.fechaDia()));
+		tfFecha.addKeyListener(new FechaListener());	
 		
 		lUsuario = new JLabel("Usuario");
 		lUsuario.setBounds(10, 60, 80, 20);
 		
-		tfUsuario = new JTextField();
-		tfUsuario.setBounds(100, 60, 100, 20);
+		pfUsuario = new JPasswordField();
+		pfUsuario.setBounds(100, 60, 100, 20);
+		pfUsuario.addActionListener(new PasswordListener());
 		
 		bCorrecto = new JButton("Correcto");
 		bCorrecto.setBounds(30, 135, 100, 20);
@@ -78,7 +82,7 @@ public class DatosInicio {
 		pantallaDi.add(bCalendario);
 		pantallaDi.add(tfFecha);
 		pantallaDi.add(lUsuario);
-		pantallaDi.add(tfUsuario);
+		pantallaDi.add(pfUsuario);
 		pantallaDi.add(bCorrecto);
 		pantallaDi.add(bFinPrograma);
 		pantallaDi.setVisible(true);
@@ -112,13 +116,13 @@ public class DatosInicio {
 						existeReg = true;
 
 						lNombreEmpresa.setText(rs.getString("SISTEM_NOMBRE"));
-						DatosComunes dc = new DatosComunes(empresa);
-						System.out.println(DatosComunes.nombreEmpresa);
+						tfFecha.requestFocus(true);
+						tfFecha.selectAll();
 					}
 					if(existeReg == false){
-						System.out.println("No existe la empresa, CREARLA!!!");
-						//JOptionPane.showMessageDialog(null, "No existe la empresa, CREARLA!!!");
-						//tfEmpresa.requestFocus();
+						//System.out.println("No existe la empresa, CREARLA!!!");
+						JOptionPane.showMessageDialog(null, "No existe la empresa, CREARLA!!!");
+						tfEmpresa.requestFocus();
 					}
 
 				} catch (SQLException e) {
@@ -129,7 +133,59 @@ public class DatosInicio {
 		}
 	}
 	
+	private boolean existeUsuario(String usuario){
+		
+		ResultSet rs = null;
+		boolean existeUsuario = false;
+		boolean noError = true;
+		
+		usuario = usuario.toUpperCase();
+		
+		if(usuario.length() > 0){
+			try {
+				rs = m.query("SELECT * FROM ACCUSU WHERE ACCUSU_USUARIO = '" + usuario + "'");
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(null, "Error en lectura fichero de Usuarios!!!");				
+			}
+
+			try {
+				if(!rs.next())
+					existeUsuario = false;
+				else
+					existeUsuario = true;
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(null, "Usuario incorrectos!!!");
+			}
+		}
+		
+		
+		return existeUsuario;
+	}
 	
+	class PasswordListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			String cmd = arg0.getActionCommand();
+			String usuario = new String(pfUsuario.getPassword());
+	        
+			if (usuario.equals("copoliyo"))
+				System.out.println(usuario);
+			else{
+				if(existeUsuario(usuario))
+					System.out.println("El usuario " + usuario + " es válido.");
+				else
+					System.out.println("El usuario " + usuario + " NO EXISTE!!!");
+			}
+ 
+		}				
+	}
+		
 	class BotonListener implements ActionListener{		
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
@@ -152,7 +208,9 @@ public class DatosInicio {
 			fecha = cal.getFecha();
 			if (fecha != 0){
 				tfFecha.setText(Cadena.fechaAcadena(fecha));
-			}			
+			}	
+			pfUsuario.requestFocus(true);
+			pfUsuario.selectAll();
 		}
 	}
 	
@@ -200,7 +258,7 @@ public class DatosInicio {
 		@Override
 		public void focusGained(FocusEvent arg0) {
 			// TODO Auto-generated method stub
-			
+			tfEmpresa.selectAll();
 		}
 
 		@Override
@@ -210,4 +268,50 @@ public class DatosInicio {
 		}
 		
 	}
+	
+	class FechaListener implements KeyListener, FocusListener{
+
+		@Override
+		public void focusGained(FocusEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void focusLost(FocusEvent arg0) {
+			// TODO Auto-generated method stub
+			tfFecha.select(0, 0);
+		}
+
+		@Override
+		public void keyPressed(KeyEvent arg0) {
+			// TODO Auto-generated method stub			
+			if (arg0.getKeyCode() == KeyEvent.VK_ENTER){
+				if (Fecha.fechaValida(tfFecha.getText())){
+					// Un pequeño lío
+					tfFecha.setText(Cadena.fechaAcadena(Cadena.cadenaAfecha(tfFecha.getText())));
+					tfFecha.select(0, 0);
+					pfUsuario.requestFocus(true);
+					pfUsuario.selectAll();
+				}else{
+					tfFecha.requestFocus(true);
+				}
+					
+			}
+		}
+
+		@Override
+		public void keyReleased(KeyEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void keyTyped(KeyEvent arg0) {
+			// TODO Auto-generated method stub			
+		}
+		
+	}
+
+
 }

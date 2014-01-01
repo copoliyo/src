@@ -14,7 +14,7 @@ public class DatosComunes {
 	static final int MAX_FDP = 7;
 	static final int MAX_TIPO_IVA = 4;
 	
-	public static String eEmpresa;
+	public  static String eEmpresa;
 	public static String nombreEmpresa;
 	public static String sisNomComer;
 	public static String sisDir;
