@@ -1,4 +1,5 @@
 // Comentario en calendario
+// Comentario en el fichero remoto
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -55,12 +56,12 @@ public class Calendario {
 		pSuperiorIzq.setBackground(Color.WHITE);
 		pSuperiorDer.setBackground(Color.WHITE);
 		
-		// La parte superior albergar· otros dos paneles uno al lado del otro
+		// La parte superior albergar√° otros dos paneles uno al lado del otro
 		BoxLayout horizontal = new BoxLayout(pSuperior, BoxLayout.X_AXIS);
 		pSuperior.setLayout(horizontal);
 		
-		// Cada uno de los paneles tendr· dos botones (EAST, WEST) y la
-		// Etiqueta de aÒo/mes (CENTER).
+		// Cada uno de los paneles tendr√° dos botones (EAST, WEST) y la
+		// Etiqueta de a√±o/mes (CENTER).
 		BorderLayout borderSupIzq = new BorderLayout();
 		BorderLayout borderSupDer = new BorderLayout();
 		
@@ -109,7 +110,7 @@ public class Calendario {
 		JPanel pGrid = new JPanel();
 		pGrid.setLayout(matriz);		
 		
-		// Ahora tenemos que aÒadir los botones en un GridLayout
+		// Ahora tenemos que a√±adir los botones en un GridLayout
 		for(int y = 0; y < MAX_FILAS; y++){
 			for(int x = 0; x < MAX_COLUMNAS; x++){
 				if(y == 0){
