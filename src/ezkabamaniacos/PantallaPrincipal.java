@@ -42,7 +42,6 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         LONGITUD(7),
         ELEVACION(8),
         PULSACIONES(9),
-
         TIEMPO_A_INICIO(10),
         TIPO_PUNTO(11);
 
@@ -258,8 +257,8 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         modeloTabla.addColumn("Elevacion");
         modeloTabla.addColumn("Pulsaciones");  
         modeloTabla.addColumn("Tiempo a Inicio"); 
-
         modeloTabla.addColumn("Tipo");
+        modeloTabla.addColumn("T. Inic. Seg.");
         
         jtTrack = new JTable(modeloTabla);
         //jtTrack.setFont(Apariencia.cambiaFuente(Font.PLAIN, 13));
@@ -278,6 +277,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         jtTrack.getColumn("Pulsaciones").setMaxWidth(90);
         jtTrack.getColumn("Tiempo a Inicio").setMaxWidth(80);
         jtTrack.getColumn("Tipo").setMaxWidth(200);
+        jtTrack.getColumn("T. Inic. Seg.").setMaxWidth(80);
         
          // Hacemos que las columnas se alineen a la DERECHA
         tcr = new DefaultTableCellRenderer();
@@ -294,7 +294,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         jtTrack.getColumn("Pulsaciones").setCellRenderer(tcr);
         jtTrack.getColumn("Tiempo a Inicio").setCellRenderer(tcr);   
         jtTrack.getColumn("Tipo").setCellRenderer(tcr); 
-        jtTrack.getColumn("Tiempo a Inicio").setCellRenderer(tcr);
+        jtTrack.getColumn("T. Inic. Seg.").setCellRenderer(tcr);
         
         // Hacemos que la comluna del saldo se alinee a la derecha y
         // que salga en rojo si es negativa.
@@ -313,7 +313,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         spTrack.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         // Agregamos el JScrollPane al contenedor
         spTrack.setBounds(10, 100, 1170, 400);
-        spTrack.setBounds(10, 100, 970, 400);
+        //spTrack.setBounds(10, 100, 970, 400);
         spTrack.setFont(Apariencia.cambiaFuente());
         spTrack.setBackground(Color.yellow);
         getContentPane().add(spTrack);
@@ -379,7 +379,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         gpx = null;
         gpx = Utilidad.cargaTrackDesdeBd(id);
         modeloTabla.setRowCount(0);
-        CoordenadaGeografica cgKm0 = new CoordenadaGeografica(42.837620, -1.654420);
+        CoordenadaGeografica cgKm0 = new CoordenadaGeografica(42.837447, -1.654302);
         
         if(gpx == null){
             Apariencia.mensajeInformativo(4, "Error al cargar el Track.");
@@ -392,8 +392,27 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         CoordenadaGeografica cg0 = new CoordenadaGeografica();
         CoordenadaGeografica cg1 = new CoordenadaGeografica();
         CoordenadaUTM utm0 = new CoordenadaUTM();
-        CoordenadaUTM utm1 = new CoordenadaUTM();        
+        CoordenadaUTM utm1 = new CoordenadaUTM();   
+        CoordenadaGeografica[] kmXcg = new CoordenadaGeografica[7];
+        
+        // Cada kilómetro y justo antes de la curva de las antenas
+        kmXcg[0] = new CoordenadaGeografica(42.842300, -1.652440);
+        kmXcg[1] = new CoordenadaGeografica(42.847162, -1.662240);
+        kmXcg[2] = new CoordenadaGeografica(42.850878, -1.666766);
+        kmXcg[3] = new CoordenadaGeografica(42.846680, -1.656013);
+        kmXcg[4] = new CoordenadaGeografica(42.849322, -1.659193);
+        kmXcg[5] = new CoordenadaGeografica(42.850748, -1.659372);
+        kmXcg[6] = new CoordenadaGeografica(42.854087, -1.663827);
+        
+        CoordenadaUTM[] kmXutm = new CoordenadaUTM[7];
+        
+        for(int i = 0; i < kmXcg.length; i++){
+            kmXutm[i] = new CoordenadaUTM();
+            kmXutm[i] = Utilidad.geograficaToUtm(kmXcg[i]);
+        }
+        
         String horaInicial = "";
+        String horaInicioSegmento = "";
         String hora0 = "";
         String hora1 = "";
         boolean esPrimerPunto = true;
@@ -403,13 +422,14 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         double distanciaInicioSegmento = 0.0;
         int diferenciaTramoSegundos = 0;
         int diferenciaInicioSegundos = 0;
+        int diferenciaInicioTramoSegundos = 0;
         
         TrackPoint punto = new TrackPoint();
        
         
         int puntoTrack = 1;
         Iterator<TrackPoint> itrPartidos = gpx.track.iterator();
-        Object fila[] = {"", "", "", "", "", "", "", "", "", "", "", ""};
+        Object fila[] = {"", "", "", "", "", "", "", "", "", "", "", "", ""};
         
         for(int i = 0; i < gpx.track.size() ; i++){
         //while(itrPartidos.hasNext()){
@@ -477,7 +497,21 @@ public class PantallaPrincipal extends javax.swing.JFrame {
            
            distanciaInicioSegmento = distanciaDosCoordenadasGeograficas(cgKm0, cg0);
            
+           if(distanciaInicioSegmento < 5.0){
+               horaInicioSegmento = hora0;
+               distanciaAlInicio = 0.0;
+           }
+           
            fila[11] = Cadena.formatoConComaDecimal(distanciaInicioSegmento);
+           
+           diferenciaInicioTramoSegundos = Utilidad.horaConformatoAsegundos(hora1)  - Utilidad.horaConformatoAsegundos(horaInicioSegmento);
+           
+           fila[12] = Utilidad.segundosHoraConFormato((long) diferenciaInicioTramoSegundos);
+           
+           for (CoordenadaUTM kmXutm1 : kmXutm) {
+               if(Utilidad.distanciaDosCoordenadasUTM(utm1, kmXutm1) < 5.0)
+                   System.out.println(fila[4] + " - " +  fila[12]);
+           }
            modeloTabla.addRow(fila);
            
            puntoTrack++;
