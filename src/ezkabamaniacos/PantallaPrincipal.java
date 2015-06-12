@@ -509,7 +509,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
            fila[12] = Utilidad.segundosHoraConFormato((long) diferenciaInicioTramoSegundos);
            
            for (CoordenadaUTM kmXutm1 : kmXutm) {
-               if(Utilidad.distanciaDosCoordenadasUTM(utm1, kmXutm1) < 5.0)
+               if(Utilidad.distanciaDosCoordenadasUTM(utm1, kmXutm1) < 8.0)
                    System.out.println(fila[4] + " - " +  fila[12]);
            }
            modeloTabla.addRow(fila);
